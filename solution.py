@@ -1,6 +1,7 @@
 from fractions import Fraction
 
 def solution(m):
+    #normalizes the rows of the matrix
     normalized = [[Fraction(0,1) for y in range(len(m))] for x in range (len(m))]
     for i in range(len(m)):
         sum = 0
@@ -10,9 +11,9 @@ def solution(m):
             sum = 1
         for j in range(len(m[i])):
             normalized[i][j] = Fraction(m[i][j],sum)
-            
     #print(normalized)
 
+    #retrieve the non-terminal rows
     nonterminalRows = []
     for i in range(len(normalized)):
         allZero = True
@@ -22,11 +23,11 @@ def solution(m):
                 break
         if normalized[i][i] != 1 and allZero == False: #not terminal
             nonterminalRows.append(i)
-
     #print(nonterminalRows)
     
     size = len(nonterminalRows)
 
+    #solve for q, the bottom right quadrant
     q = []
     for i in range(size):
         q.append([])
@@ -37,6 +38,7 @@ def solution(m):
         count += 1 
     #print(q)
 
+    #solve for s, the bottom left quadrant
     s = []
     for i in range(size):
         s.append([])
@@ -48,16 +50,18 @@ def solution(m):
         count += 1
     #print(s)
 
+    #create the identity matrix
     identity = [[0 for y in range(size)] for x in range(size)]
     for i in range(size):
         identity[i][i] = 1
-        
     #print(identity)
     
+    #solution is A = S + QA, or A = (I-Q)^-1 * S
     ans = multiply(invert(subtract(identity,q)),s)[0]
     #print(ans)
     ans.append(1)
 
+    #clean out the fractions
     max = 0
     toCheck = []
     while checkFrac(ans) == False:
@@ -70,7 +74,6 @@ def solution(m):
     for i in range(len(ans)):
         ans[i] = ans[i].numerator
 
-    
     primes = prime(ans[len(ans)-1]).reverse() 
     count = 0
     while primes:
@@ -138,6 +141,7 @@ def invert(a):
                 identity[i][j] -= currentMultiplier * identity[currentDiag][j]
     return identity
 
+"""
 print(solution([[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0,0], [0, 0, 0, 0, 0]]))
 
 print(solution([[0, 1, 0, 0, 0, 1], [4, 0, 0, 3, 2, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]))
@@ -150,7 +154,6 @@ print(solution(
     [0, 0, 0, 0, 0, 0], 
     [0, 0, 0, 0, 0, 0]]))
 
-"""
 #print(solution([[0,1],[0,0]]))
 
 print(prime(60))
